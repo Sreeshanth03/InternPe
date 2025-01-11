@@ -1,0 +1,109 @@
+import java.util.Scanner;
+
+public class ConnectFour {
+
+    static final int ROWS = 6;
+    static final int COLS = 7;
+    static char[][] board = new char[ROWS][COLS];
+    static char currentPlayer = 'R';
+
+    public static void main(String[] args) {
+        initializeBoard();
+        printBoard();
+        while (true) {
+            playerMove();
+            printBoard();
+            if (checkWinner()) {
+                System.out.println("Player " + currentPlayer + " wins!");
+                break;
+            }
+            if (isBoardFull()) {
+                System.out.println("It's a draw!");
+                break;
+            }
+            switchPlayer();
+        }
+    }
+
+    public static void initializeBoard() {
+        for (int i = 0; i < ROWS; i++) {
+            for (int j = 0; j < COLS; j++) {
+                board[i][j] = '-';
+            }
+        }
+    }
+
+    public static void printBoard() {
+        for (int i = 0; i < ROWS; i++) {
+            for (int j = 0; j < COLS; j++) {
+                System.out.print(board[i][j] + " ");
+            }
+            System.out.println();
+        }
+    }
+
+    public static void playerMove() {
+        Scanner sc = new Scanner(System.in);
+        int col;
+        while (true) {
+            System.out.println("Player " + currentPlayer + ", choose a column (0-6): ");
+            col = sc.nextInt();
+            if (col >= 0 && col < COLS && board[0][col] == '-') {
+                break;
+            } else {
+                System.out.println("Column full or invalid. Try again.");
+            }
+        }
+        for (int row = ROWS - 1; row >= 0; row--) {
+            if (board[row][col] == '-') {
+                board[row][col] = currentPlayer;
+                break;
+            }
+        }
+    }
+
+    public static void switchPlayer() {
+        currentPlayer = (currentPlayer == 'R') ? 'Y' : 'R';
+    }
+
+    public static boolean checkWinner() {
+        // Check horizontal, vertical, and diagonal lines for a win
+        for (int row = 0; row < ROWS; row++) {
+            for (int col = 0; col < COLS; col++) {
+                if (board[row][col] != '-' && (
+                        checkDirection(row, col, 1, 0) || // Horizontal
+                        checkDirection(row, col, 0, 1) || // Vertical
+                        checkDirection(row, col, 1, 1) || // Diagonal /
+                        checkDirection(row, col, 1, -1))) // Diagonal \
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public static boolean checkDirection(int row, int col, int dRow, int dCol) {
+        char target = board[row][col];
+        int count = 0;
+        for (int i = 0; i < 4; i++) {
+            int newRow = row + i * dRow;
+            int newCol = col + i * dCol;
+            if (newRow >= 0 && newRow < ROWS && newCol >= 0 && newCol < COLS && board[newRow][newCol] == target) {
+                count++;
+            } else {
+                break;
+            }
+        }
+        return count == 4;
+    }
+
+    public static boolean isBoardFull() {
+        for (int i = 0; i < COLS; i++) {
+            if (board[0][i] == '-') {
+                return false;
+            }
+        }
+        return true;
+    }
+}
